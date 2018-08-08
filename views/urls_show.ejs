@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title> TinyApp: <%=shortURL%> </title>
+    <header>
+      <% include ./partials/_header %>
+    </header>
+  </head>
+  <body>
+    <h1> URL Shortener </h1>
+    <ul>
+      Long URL: <%=longURL%>
+      <br/>
+      Short URL: http://localhost:8080/u/<%=shortURL%>
+      <br/>
+      <form method="POST" action="/urls/<%= shortURL %>/update">
+        <label for="longURL">Enter a URL:</label>
+        <input type="text" id="longURL"  name="longURL" placeholder="http://" style="width: 300px">
+        <input type="hidden" id='shortURL' name="shortURL" value="<%= shortURL %>">
+        <button type="submit" name="update" value="<%= longURL %>">update</button>
+      </form>
+    </ul>
+  </body>
+</html>

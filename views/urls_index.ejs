@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>TinyApp: Index</title>
+    <header>
+      <% include ./partials/_header %>
+    </header>
+  </head>
+  <body>
+    <h1> Your Short URLs <h1>
+    <ul>
+      <%
+      for (shortURL in urls) {
+      var longURL = urls[shortURL]
+      %>
+      <li>
+        <%= longURL %> -> <%= shortURL %>
+        <form method="POST" action="/urls/<%= shortURL %>/edit">
+          <button type="submit" name="edit"value= "<%= shortURL %>">Edit</button>
+        </form>
+        <form method="POST" action="/urls/<%= shortURL %>/delete">
+          <button type="submit" name="delete" value= "<%= shortURL %>">Delete</button>
+        </form>
+      </li>
+      <% } %>
+      <li><a href="/urls#"> Shorten URLs here!  </a></li>
+    </ul>
+  </body>
+</html>
