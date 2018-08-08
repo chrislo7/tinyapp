@@ -1,17 +1,23 @@
-<nav class="navbar navbar-default" role="navigation">
-<div class="container-fluid">
-
-    <div class="navbar-header">
-        <a class="navbar-brand" href="#">
-            <span class="glyphicon glyphicon glyphicon-tree-deciduous"></span>
-
-        </a>
-
-        <ul class="nav navbar-nav">
-            <li><a href="/">Home</a></li>
-            <li><a href="/urls">URL Index</a></li>
-        </ul>
-    </div>
-
-</div>
-</nav>
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <h1>TinyApp</h1>
+    </head>
+    <body>
+        <% if (username) {  %>
+        <h2>
+        Welcome, <%= username %>
+        <form action="/logout" method="POST" 150px;>
+            <input type="submit" value="logout">
+            </h2>
+            <% } else { %>
+            <form action="/login" method="POST" 150px;">
+                <label for="username">Enter username:</label>
+                <input type="text" id="username" name="username" style="width: 150px">
+                <input type="submit" value="login">
+            </form>
+            <% } %>
+            <a href="/">Home </a> <br/>
+            <a href="/urls">URL Index</a> <br/>
+        </body>
+    </html>

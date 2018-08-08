@@ -15,11 +15,9 @@
       var longURL = urls[shortURL]
       %>
       <li>
-        <%= longURL %> -> <%= shortURL %>
-        <form method="POST" action="/urls/<%= shortURL %>/edit">
-          <button type="submit" name="edit"value= "<%= shortURL %>">Edit</button>
-        </form>
         <form method="POST" action="/urls/<%= shortURL %>/delete">
+        <%= longURL %> -> <%= shortURL %>
+          <a href="/urls/<%= shortURL %>">Edit</a>
           <button type="submit" name="delete" value= "<%= shortURL %>">Delete</button>
         </form>
       </li>

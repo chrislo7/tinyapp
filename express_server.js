@@ -1,6 +1,8 @@
 var express = require("express");
 var app = express();
 var PORT = 8080; // default port 8080
+var cookieParser = require('cookie-parser');
+app.use(cookieParser());
 
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -31,16 +33,11 @@ app.get("/urls.json", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  let templateVars = { urls: urlDatabase };
+  let templateVars = {
+    username: req.cookies["username"],
+    urls: urlDatabase
+  };
   res.render("urls_index", templateVars);
-});
-
-app.post("/urls", (req, res) => {
-  let shortURL = generateRandomString();
-  let longURL = req.body.longURL;
-  console.log(req.body); // debug statement to see POST parameters
-  urlDatabase[shortURL] = longURL;
-  res.redirect(`http://localhost:8080/urls/${shortURL}`);
 });
 
 app.get("/u/:shortURL", (req, res) => {
@@ -49,15 +46,25 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  let templateVars = {
+    username: req.cookies["username"]
+  }
+  res.render("urls_new", templateVars);
 });
 
 app.get("/urls/:id", (req, res) => {
   let templateVars = {
+    username: req.cookies["username"],
     shortURL: req.params.id,
-    longURL: urlDatabase[req.params.id]
-  };
-  res.render("urls_show", templateVars);
+    longURL: urlDatabase[req.params.id]}
+  res.render("urls_show", templateVars); });
+
+app.post("/urls", (req, res) => {
+  let shortURL = generateRandomString();
+  let longURL = req.body.longURL;
+  console.log(req.body); // debug statement to see POST parameters
+  urlDatabase[shortURL] = longURL;
+  res.redirect(`http://localhost:8080/urls/${shortURL}`);
 });
 
 app.post("/urls/:id/delete", (req, res) => {
@@ -74,11 +81,15 @@ app.post("/urls/:id/update", (req, res) => {
   res.redirect("http://localhost:8080/urls/");
 });
 
-app.post("/urls/:id/edit", (req, res) => {
-  let longURL = req.body.longURL;
-  let shortURL = req.body.shortURL;
-  res.redirect(`http://localhost:8080/urls/${shortURL}`);
-});
+app.post("/login", (req, res) => {
+  res.cookie("username", req.body.username);
+  res.redirect("http://localhost:8080/urls/")
+})
+
+app.post("/logout", (req, res) => {
+  res.clearCookie("username");
+  res.redirect("http://localhost:8080/urls/")
+})
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
