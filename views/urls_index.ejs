@@ -11,16 +11,20 @@
     <h1> Your Short URLs <h1>
     <ul>
       <%
-      for (shortURL in urls) {
-      var longURL = urls[shortURL]
+      for (shortURL in urlDatabase) {
+      var longURL = urlDatabase[shortURL].link
       %>
-      <li>
+      <li><%= longURL %> -> <%= shortURL %></li>
+      <%
+      if (urlDatabase[shortURL].userID === userID) {
+      %>
+
         <form method="POST" action="/urls/<%= shortURL %>/delete">
-        <%= longURL %> -> <%= shortURL %>
           <a href="/urls/<%= shortURL %>">Edit</a>
           <button type="submit" name="delete" value= "<%= shortURL %>">Delete</button>
         </form>
-      </li>
+
+      <% } %>
       <% } %>
       <li><a href="/urls#"> Shorten URLs here!  </a></li>
     </ul>

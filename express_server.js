@@ -9,24 +9,23 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.set("view engine", "ejs");
 
-var generateRandomString = function() {
-  var str = "";
-  var charBank =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvxyz0123456789";
-  for (var x = 0; x < 6; x++) {
-    str += charBank.charAt(Math.floor(Math.random() * charBank.length));
-  }
-  return str;
-};
+// ******************** OBJECTS BELOW ********************//
 
 var urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
-};
+  "b2xVn2": {
+    userID: "VinDiesel",
+    link: "http://www.lighthouselabs.ca"
+  },
+  "9sm5xK": {
+    userID: "test2",
+    link: "http://www.google.com"
+  }
+}
+
 
 const users = {
   test1: {
-    userID: "Vin Disiel",
+    userID: "VinDiesel",
     email: "test1@example.com",
     password: "imbald"
   },
@@ -35,6 +34,18 @@ const users = {
     email: "test2@example.com",
     password: "password"
   }
+};
+
+// ******************** FUNCTIONS BELOW ********************//
+
+function generateRandomString() {
+  var str = "";
+  var charBank =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvxyz0123456789";
+  for (var x = 0; x < 6; x++) {
+    str += charBank.charAt(Math.floor(Math.random() * charBank.length));
+  }
+  return str;
 };
 
 function existEmail(email) {
@@ -73,6 +84,8 @@ function fetchUserPass(pass) {
   return user_pass;
 }
 
+// ******************** APP.GET BELOW ********************//
+
 app.get("/", (req, res) => {
   res.end("Hello! This is TinyApp, a URL shorterner.");
 });
@@ -84,7 +97,7 @@ app.get("/urls.json", (req, res) => {
 app.get("/urls", (req, res) => {
   let templateVars = {
     userID: req.cookies["userID"],
-    urls: urlDatabase
+    urlDatabase: urlDatabase
   };
   res.render("urls_index", templateVars);
 });
@@ -95,10 +108,17 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  let templateVars = {
-    userID: req.cookies["userID"]
+  var userID = req.cookies.userID;
+  if (!userID) {
+    res.redirect("/login")
+    return;
+  }
+  else {
+    let templateVars = {
+      userID: req.cookies["userID"]
+    }
+    res.render("urls_new", templateVars)
   };
-  res.render("urls_new", templateVars);
 });
 
 app.get("/register", (req, res) => {
@@ -113,10 +133,12 @@ app.get("/urls/:id", (req, res) => {
   let templateVars = {
     userID: req.cookies["userID"],
     shortURL: req.params.id,
-    longURL: urlDatabase[req.params.id]
+    longURL: urlDatabase[shortURL].link
   };
   res.render("urls_show", templateVars);
 });
+
+// ******************** APP.POST BELOW ********************//
 
 app.post("/urls", (req, res) => {
   let shortURL = generateRandomString();
@@ -128,8 +150,13 @@ app.post("/urls", (req, res) => {
 
 app.post("/urls/:id/delete", (req, res) => {
   let shortURL = req.body.delete;
-  delete urlDatabase[shortURL];
-  res.redirect("http://localhost:8080/urls/");
+  let userID = req.cookies.userID;
+  if (urlDatabase[shortURL].userID != userID) {
+    res.sendStatus(300);
+  } else {
+    delete urlDatabase[shortURL];
+    res.redirect("http://localhost:8080/urls/");
+  }
 });
 
 app.post("/urls/:id/update", (req, res) => {
