@@ -25,35 +25,52 @@ var urlDatabase = {
 };
 
 const users = {
-  "test1": {
+  test1: {
     userID: "test1",
     email: "test1@example.com",
     password: "vindieselshead"
   },
-  "test2": {
+  test2: {
     userID: "test2",
     email: "test2@example.com",
     password: "password"
   }
 };
 
-function existence(email) {
-  for (key in users) {
-    if (email === users[key]["email"]) {
+function existEmail(email) {
+  for (user in users) {
+    if (email === users[user].email) {
       return true;
     }
   }
   return false;
 }
 
+function existPass(pass) {
+  for (user in users) {
+    if (pass === users[user].password) {
+      return true;
+    }
+  }
+  return false;
+}
 
 function fetchUserID(email) {
-  for (user in users){
-    if (email === users[user].email){
+  for (user in users) {
+    if (email === users[user].email) {
       var user_id = users[user].userID;
     }
   }
   return user_id;
+}
+
+function fetchUserPass(pass) {
+  for (user in users) {
+    if (pass === users[user].password) {
+      var user_pass = users[user].password;
+    }
+  }
+  return user_pass;
 }
 
 app.get("/", (req, res) => {
@@ -89,8 +106,8 @@ app.get("/register", (req, res) => {
 });
 
 app.get("/login", (req, res) => {
-  res.render("login")
-})
+  res.render("login");
+});
 
 app.get("/urls/:id", (req, res) => {
   let templateVars = {
@@ -124,8 +141,19 @@ app.post("/urls/:id/update", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-  res.cookie("userID", fetchUserID(req.body.emailLogin));
-  res.redirect("http://localhost:8080/urls/");
+  console.log(req.body.emailLogin)
+  console.log(fetchUserID(req.body.emailLogin));
+
+  if (fetchUserPass(req.body.passLogin) && fetchUserID(req.body.emailLogin)) {
+    res.cookie("userID", fetchUserID(req.body.emailLogin));
+    res.cookie("userPass", fetchUserPass(req.body.passLogin));
+    res.redirect("http://localhost:8080/urls/");
+    return;
+  } else {
+    res.sendStatus(400);
+    return;
+    res.redirect("/");
+  }
 });
 
 app.post("/logout", (req, res) => {
@@ -142,7 +170,7 @@ app.post("/register", (req, res) => {
   } else {
     const user = { id: userID, email: email, password: password };
     res.cookie("userID", userID);
-    if (existence(user.email)) {
+    if (existEmail(user.email)) {
       res.send("Email already used, try again.");
     } else {
       users[userID] = user;
@@ -151,9 +179,7 @@ app.post("/register", (req, res) => {
   }
 });
 
-app.post("/login", (req, res) => {
-
-})
+app.post("/login", (req, res) => {});
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
