@@ -83,7 +83,7 @@ app.get("/urls.json", (req, res) => {
 
 app.get("/urls", (req, res) => {
   let templateVars = {
-    username: req.cookies["userID"],
+    userID: req.cookies["userID"],
     urls: urlDatabase
   };
   res.render("urls_index", templateVars);
@@ -96,7 +96,7 @@ app.get("/u/:shortURL", (req, res) => {
 
 app.get("/urls/new", (req, res) => {
   let templateVars = {
-    username: req.cookies["userID"]
+    userID: req.cookies["userID"]
   };
   res.render("urls_new", templateVars);
 });
@@ -111,7 +111,7 @@ app.get("/login", (req, res) => {
 
 app.get("/urls/:id", (req, res) => {
   let templateVars = {
-    username: req.cookies["userID"],
+    userID: req.cookies["userID"],
     shortURL: req.params.id,
     longURL: urlDatabase[req.params.id]
   };
@@ -141,9 +141,6 @@ app.post("/urls/:id/update", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-  console.log(req.body.emailLogin)
-  console.log(fetchUserID(req.body.emailLogin));
-
   if (fetchUserPass(req.body.passLogin) && fetchUserID(req.body.emailLogin)) {
     res.cookie("userID", fetchUserID(req.body.emailLogin));
     res.cookie("userPass", fetchUserPass(req.body.passLogin));
