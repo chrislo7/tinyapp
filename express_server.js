@@ -103,7 +103,8 @@ app.get("/urls", (req, res) => {
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  let longURL = urlDatabase[req.params.shortURL];
+  let shortURL = req.params.shortURL
+  let longURL = urlDatabase[req.params.shortURL].link;
   res.redirect(longURL);
 });
 
@@ -130,9 +131,10 @@ app.get("/login", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
+  let shortURL = req.params.id;
   let templateVars = {
     userID: req.cookies["userID"],
-    shortURL: req.params.id,
+    shortURL: shortURL,
     longURL: urlDatabase[shortURL].link,
     urlDatabase: urlDatabase
   };
@@ -145,7 +147,7 @@ app.post("/urls", (req, res) => {
   let shortURL = generateRandomString();
   let longURL = req.body.longURL;
   console.log(req.body); // debug statement to see POST parameters
-  urlDatabase[shortURL] = longURL;
+  urlDatabase[shortURL].link = longURL;
   res.redirect(`http://localhost:8080/urls/${shortURL}`);
 });
 
@@ -155,7 +157,7 @@ app.post("/urls/:id/delete", (req, res) => {
   if (urlDatabase[shortURL].userID != userID) {
     res.sendStatus(300);
   } else {
-    delete urlDatabase[shortURL];
+    delete urlDatabase[shortURL].link;
     res.redirect("http://localhost:8080/urls/");
   }
 });
@@ -163,7 +165,7 @@ app.post("/urls/:id/delete", (req, res) => {
 app.post("/urls/:id/update", (req, res) => {
   let longURL = req.body.longURL;
   let shortURL = req.body.shortURL;
-  urlDatabase[shortURL] = longURL;
+  urlDatabase[shortURL].link = longURL;
   console.log(longURL);
   res.redirect("http://localhost:8080/urls/");
 });
