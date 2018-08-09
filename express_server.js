@@ -26,9 +26,9 @@ var urlDatabase = {
 
 const users = {
   test1: {
-    userID: "test1",
+    userID: "Vin Disiel",
     email: "test1@example.com",
-    password: "vindieselshead"
+    password: "imbald"
   },
   test2: {
     userID: "test2",
@@ -155,7 +155,7 @@ app.post("/login", (req, res) => {
 
 app.post("/logout", (req, res) => {
   res.clearCookie("userID");
-  res.redirect("http://localhost:8080/urls/");
+  res.redirect("http://localhost:8080/login/");
 });
 
 app.post("/register", (req, res) => {
@@ -165,7 +165,7 @@ app.post("/register", (req, res) => {
     console.log("Missing email & password, please enter!");
     res.status(404).send("404: Missing email & password, please enter!");
   } else {
-    const user = { id: userID, email: email, password: password };
+    const user = { userID: userID, email: email, password: password };
     res.cookie("userID", userID);
     if (existEmail(user.email)) {
       res.send("Email already used, try again.");
