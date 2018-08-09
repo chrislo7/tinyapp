@@ -8,11 +8,16 @@
     </header>
   </head>
   <body>
+   <% if (!userID || urlDatabase[shortURL].userID !== userID){ %>
+    <h1> Access Denied. </h1>
+    <h2> This may not be your account or </h2>
+    <h2> you did not login correctly </h2>
+    <% } else { %>
     <h1> URL Shortener </h1>
     <ul>
-      Long URL: <%=longURL%>
+      Long URL: <%= longURL %>
       <br/>
-      Short URL: http://localhost:8080/u/<%=shortURL%>
+      Short URL: http://localhost:8080/u/<%= shortURL %>
       <br/>
       <form method="POST" action="/urls/<%= shortURL %>/update">
         <label for="longURL">Enter a URL:</label>
@@ -21,5 +26,6 @@
         <button type="submit" name="update" value="<%= longURL %>">update</button>
       </form>
     </ul>
+    <% } %>
   </body>
 </html>

@@ -133,7 +133,8 @@ app.get("/urls/:id", (req, res) => {
   let templateVars = {
     userID: req.cookies["userID"],
     shortURL: req.params.id,
-    longURL: urlDatabase[shortURL].link
+    longURL: urlDatabase[shortURL].link,
+    urlDatabase: urlDatabase
   };
   res.render("urls_show", templateVars);
 });
@@ -208,4 +209,3 @@ app.post("/login", (req, res) => {});
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
-
