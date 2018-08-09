@@ -1,7 +1,7 @@
 var express = require("express");
 var app = express();
 var PORT = 8080; // default port 8080
-var cookieParser = require('cookie-parser');
+var cookieParser = require("cookie-parser");
 app.use(cookieParser());
 
 const bodyParser = require("body-parser");
@@ -24,6 +24,38 @@ var urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+const users = {
+  "test1": {
+    userID: "test1",
+    email: "test1@example.com",
+    password: "vindieselshead"
+  },
+  "test2": {
+    userID: "test2",
+    email: "test2@example.com",
+    password: "password"
+  }
+};
+
+function existence(email) {
+  for (key in users) {
+    if (email === users[key]["email"]) {
+      return true;
+    }
+  }
+  return false;
+}
+
+
+function fetchUserID(email) {
+  for (user in users){
+    if (email === users[user].email){
+      var user_id = users[user].userID;
+    }
+  }
+  return user_id;
+}
+
 app.get("/", (req, res) => {
   res.end("Hello! This is TinyApp, a URL shorterner.");
 });
@@ -34,7 +66,7 @@ app.get("/urls.json", (req, res) => {
 
 app.get("/urls", (req, res) => {
   let templateVars = {
-    username: req.cookies["username"],
+    username: req.cookies["userID"],
     urls: urlDatabase
   };
   res.render("urls_index", templateVars);
@@ -47,17 +79,27 @@ app.get("/u/:shortURL", (req, res) => {
 
 app.get("/urls/new", (req, res) => {
   let templateVars = {
-    username: req.cookies["username"]
-  }
+    username: req.cookies["userID"]
+  };
   res.render("urls_new", templateVars);
 });
 
+app.get("/register", (req, res) => {
+  res.render("register");
+});
+
+app.get("/login", (req, res) => {
+  res.render("login")
+})
+
 app.get("/urls/:id", (req, res) => {
   let templateVars = {
-    username: req.cookies["username"],
+    username: req.cookies["userID"],
     shortURL: req.params.id,
-    longURL: urlDatabase[req.params.id]}
-  res.render("urls_show", templateVars); });
+    longURL: urlDatabase[req.params.id]
+  };
+  res.render("urls_show", templateVars);
+});
 
 app.post("/urls", (req, res) => {
   let shortURL = generateRandomString();
@@ -77,18 +119,40 @@ app.post("/urls/:id/update", (req, res) => {
   let longURL = req.body.longURL;
   let shortURL = req.body.shortURL;
   urlDatabase[shortURL] = longURL;
-  console.log(longURL)
+  console.log(longURL);
   res.redirect("http://localhost:8080/urls/");
 });
 
 app.post("/login", (req, res) => {
-  res.cookie("username", req.body.username);
-  res.redirect("http://localhost:8080/urls/")
-})
+  res.cookie("userID", fetchUserID(req.body.emailLogin));
+  res.redirect("http://localhost:8080/urls/");
+});
 
 app.post("/logout", (req, res) => {
-  res.clearCookie("username");
-  res.redirect("http://localhost:8080/urls/")
+  res.clearCookie("userID");
+  res.redirect("http://localhost:8080/urls/");
+});
+
+app.post("/register", (req, res) => {
+  const { email, password } = req.body;
+  let userID = generateRandomString();
+  if (!email || !password) {
+    console.log("Missing email & password, please enter!");
+    res.status(404).send("404: Missing email & password, please enter!");
+  } else {
+    const user = { id: userID, email: email, password: password };
+    res.cookie("userID", userID);
+    if (existence(user.email)) {
+      res.send("Email already used, try again.");
+    } else {
+      users[userID] = user;
+      res.redirect("/");
+    }
+  }
+});
+
+app.post("/login", (req, res) => {
+
 })
 
 app.listen(PORT, () => {
