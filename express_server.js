@@ -1,13 +1,15 @@
 var express = require("express");
-const bcrypt = require('bcrypt');
+const bcrypt = require("bcrypt");
 var app = express();
 var PORT = 8080; // default port 8080
-var cookieSession = require('cookie-session')
-app.use(cookieSession({
-  name: 'session',
-  signed: false,
-  maxAge: 24 * 60 * 60 * 1000
-}))
+var cookieSession = require("cookie-session");
+app.use(
+  cookieSession({
+    name: "session",
+    signed: false,
+    maxAge: 24 * 60 * 60 * 1000
+  })
+);
 
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -25,8 +27,7 @@ var urlDatabase = {
     userID: "test2",
     link: "http://www.google.com"
   }
-}
-
+};
 
 const users = {
   test1: {
@@ -51,7 +52,7 @@ function generateRandomString() {
     str += charBank.charAt(Math.floor(Math.random() * charBank.length));
   }
   return str;
-};
+}
 
 function existEmail(email) {
   for (user in users) {
@@ -89,17 +90,14 @@ function fetchUserPass(pass) {
   return user_pass;
 }
 
-function comparePass(inputPass){
+function comparePass(inputPass) {
   for (user in users) {
-    if (bcrypt.compareSync(inputPass, users[user].password)){
+    if (bcrypt.compareSync(inputPass, users[user].password)) {
       return true;
     }
   }
-    return false;
+  return false;
 }
-
-
-
 
 // ******************** APP.GET BELOW ********************//
 
@@ -120,7 +118,7 @@ app.get("/urls", (req, res) => {
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  let shortURL = req.params.shortURL
+  let shortURL = req.params.shortURL;
   let longURL = urlDatabase[req.params.shortURL].link;
   res.redirect(longURL);
 });
@@ -128,15 +126,14 @@ app.get("/u/:shortURL", (req, res) => {
 app.get("/urls/new", (req, res) => {
   var userID = req.session.userID;
   if (!userID) {
-    res.redirect("/login")
+    res.redirect("/login");
     return;
-  }
-  else {
+  } else {
     let templateVars = {
       userID: req.session.userID
-    }
-    res.render("urls_new", templateVars)
-  };
+    };
+    res.render("urls_new", templateVars);
+  }
 });
 
 app.get("/register", (req, res) => {
@@ -230,7 +227,3 @@ app.post("/login", (req, res) => {});
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
-
-
-
-
