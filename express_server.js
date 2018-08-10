@@ -42,8 +42,9 @@ const users = {
   }
 };
 
-// ******************** FUNCTIONS BELOW ********************//
+// ******************** FUNCTIONS BELOW ********************
 
+// function used to generate random string, mainly used for generating userID
 function generateRandomString() {
   var str = "";
   var charBank =
@@ -54,6 +55,7 @@ function generateRandomString() {
   return str;
 }
 
+// function to check if an email exists in the user database, mainly used during /login
 function existEmail(email) {
   for (user in users) {
     if (email === users[user].email) {
@@ -63,15 +65,8 @@ function existEmail(email) {
   return false;
 }
 
-function existPass(pass) {
-  for (user in users) {
-    if (pass === users[user].password) {
-      return true;
-    }
-  }
-  return false;
-}
-
+// function to fetch user ID from the user database, used during login to check if the email inputted by users exists in the database
+// if the user exists, this function will return the ID of the corresponding email.
 function fetchUserID(email) {
   for (user in users) {
     if (email === users[user].email) {
@@ -81,6 +76,7 @@ function fetchUserID(email) {
   return user_id;
 }
 
+// same function as above, but returns the password of the corresponding email.
 function fetchUserPass(pass) {
   for (user in users) {
     if (pass === users[user].password) {
@@ -90,6 +86,7 @@ function fetchUserPass(pass) {
   return user_pass;
 }
 
+// function utilizing bcrypt.compareSync() to compare between the password input by user and the hashed password on the user database
 function comparePass(inputPass) {
   for (user in users) {
     if (bcrypt.compareSync(inputPass, users[user].password)) {
@@ -99,7 +96,7 @@ function comparePass(inputPass) {
   return false;
 }
 
-// ******************** APP.GET BELOW ********************//
+// ******************** APP.GET BELOW ********************
 
 app.get("/", (req, res) => {
   res.end("Hello! This is TinyApp, a URL shorterner.");
@@ -155,16 +152,22 @@ app.get("/urls/:id", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
-// ******************** APP.POST BELOW ********************//
+// ******************** APP.POST BELOW ********************
 
+//main page after login, showing users their links
 app.post("/urls", (req, res) => {
+  let userID = req.session.userID;
   let shortURL = generateRandomString();
   let longURL = req.body.longURL;
+  console.log(userID)
+  console.log(longURL);
   console.log(req.body); // debug statement to see POST parameters
-  urlDatabase[shortURL].link = longURL;
+  urlDatabase[shortURL] = { userID: userID, link: longURL };
+  console.log(urlDatabase)
   res.redirect(`http://localhost:8080/urls/${shortURL}`);
 });
 
+//deletes links
 app.post("/urls/:id/delete", (req, res) => {
   let shortURL = req.body.delete;
   let userID = req.session.userID;
@@ -176,6 +179,7 @@ app.post("/urls/:id/delete", (req, res) => {
   }
 });
 
+//updates short URLs with new long URL
 app.post("/urls/:id/update", (req, res) => {
   let longURL = req.body.longURL;
   let shortURL = req.body.shortURL;
@@ -184,6 +188,7 @@ app.post("/urls/:id/update", (req, res) => {
   res.redirect("http://localhost:8080/urls/");
 });
 
+//login page, checks if user exists
 app.post("/login", (req, res) => {
   if (comparePass(req.body.passLogin) && fetchUserID(req.body.emailLogin)) {
     req.session.userID = fetchUserID(req.body.emailLogin);
@@ -197,11 +202,16 @@ app.post("/login", (req, res) => {
   }
 });
 
+//utilized to logout
 app.post("/logout", (req, res) => {
   req.session = null;
   res.redirect("http://localhost:8080/login/");
 });
 
+//registration page
+// checks if there is an email & password entered, if not, sends error msg
+// checks if email already exists in database, if it is, sends error
+// encrypts password and further encyrpts the cookie that stores the password
 app.post("/register", (req, res) => {
   const { email, password } = req.body;
   let userID = generateRandomString();
@@ -222,7 +232,6 @@ app.post("/register", (req, res) => {
   }
 });
 
-app.post("/login", (req, res) => {});
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
