@@ -18,6 +18,7 @@ app.set("view engine", "ejs");
 
 // ******************** OBJECTS BELOW ********************//
 
+//storing urls
 var urlDatabase = {
   "b2xVn2": {
     userID: "VinDiesel",
@@ -29,6 +30,7 @@ var urlDatabase = {
   }
 };
 
+//storing users
 const users = {
   test1: {
     userID: "test1",
