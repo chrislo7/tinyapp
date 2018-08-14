@@ -161,6 +161,7 @@ app.post("/urls", (req, res) => {
   let userID = req.session.userID;
   let shortURL = generateRandomString();
   let longURL = req.body.longURL;
+  let email = req.body.email;
   console.log(req.body); // debug statement to see POST parameters
   urlDatabase[shortURL] = { userID: userID, link: longURL };
   res.redirect(`http://localhost:8080/urls/${shortURL}`);

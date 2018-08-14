@@ -3,12 +3,12 @@
     <head>
         <h1>TinyApp</h1>
         <h2>
-        <a href="/">Home </a> <br/>
-        <a href="/urls">URL Index</a> <br/>
+        <a href="/">Home </a>
         </h2>
     </head>
     <body>
         <% if (userID) {  %>
+        <h2><a href="/urls">URL Index</a> </h2>
         Welcome, <%= userID %>
         <form action="/logout" method="POST" 150px;>
             <input type="submit" value="logout">
