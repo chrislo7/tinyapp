@@ -174,6 +174,7 @@ app.post("/urls/:id/delete", (req, res) => {
     res.sendStatus(300);
   } else {
     delete urlDatabase[shortURL].link;
+    delete urlDatabase[shortURL];
     res.redirect("http://localhost:8080/urls/");
   }
 });
